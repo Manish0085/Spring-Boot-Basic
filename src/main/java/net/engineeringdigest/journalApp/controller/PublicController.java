@@ -25,7 +25,7 @@ public class PublicController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
-            User created = userService.createUser(user);
+            boolean created = userService.createUser(user);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>("Invalid user data: " + e.getMessage(), HttpStatus.BAD_REQUEST);

@@ -1,0 +1,214 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JournalEntryService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">net.engineeringdigest.journalApp.service</a>
+</div>
+
+<h1>Coverage Summary for Class: JournalEntryService (net.engineeringdigest.journalApp.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JournalEntryService</td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.8%
+  </span>
+  <span class="absValue">
+    (1/21)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">JournalEntryService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.8%
+  </span>
+  <span class="absValue">
+    (1/21)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package net.engineeringdigest.journalApp.service;
+&nbsp;
+&nbsp;import net.engineeringdigest.journalApp.entity.JournalEntry;
+&nbsp;import net.engineeringdigest.journalApp.entity.User;
+&nbsp;import net.engineeringdigest.journalApp.repository.JournalEntryRepo;
+&nbsp;import net.engineeringdigest.journalApp.repository.UserRepo;
+&nbsp;import org.bson.types.ObjectId;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class JournalEntryService {</b>
+&nbsp;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private JournalEntryRepo journalEntryRepo;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserRepo userRepo;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public JournalEntry createEntry(String username, JournalEntry journalEntry) {
+<b class="nc">&nbsp;        User user = userService.getUserByUserName(username);</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;User not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        journalEntry.setDate(LocalDate.now());</b>
+<b class="nc">&nbsp;        journalEntryRepo.save(journalEntry);</b>
+&nbsp;
+&nbsp;//        user.setUserName(null); // force error
+<b class="nc">&nbsp;        user.getJournalEntries().add(journalEntry);</b>
+<b class="nc">&nbsp;        userService.saveUser(user);</b>
+&nbsp;
+<b class="nc">&nbsp;        return journalEntry;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void saveEntry(JournalEntry journalEntry){
+<b class="nc">&nbsp;        journalEntryRepo.save(journalEntry);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void deleteEntry(String username, ObjectId id) {
+<b class="nc">&nbsp;        JournalEntry entry = journalEntryRepo.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Entry not found&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        User user = userRepo.findByUserName(username);</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;User not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        boolean removed = user.getJournalEntries().removeIf(e -&gt; e.getId().equals(id));</b>
+<b class="nc">&nbsp;        if (removed) {</b>
+<b class="nc">&nbsp;            userRepo.save(user);</b>
+&nbsp;
+<b class="nc">&nbsp;            journalEntryRepo.deleteById(id);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;JournalEntry&gt; fetchAllEntry(){
+<b class="nc">&nbsp;        return journalEntryRepo.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Optional&lt;JournalEntry&gt; fetchEntry(ObjectId id){
+<b class="nc">&nbsp;        return journalEntryRepo.findById(id);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-06-20 11:34</div>
+</div>
+</body>
+</html>

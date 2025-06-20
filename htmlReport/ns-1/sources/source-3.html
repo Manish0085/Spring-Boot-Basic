@@ -1,0 +1,205 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">net.engineeringdigest.journalApp.service</a>
+</div>
+
+<h1>Coverage Summary for Class: UserService (net.engineeringdigest.journalApp.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (2/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.2%
+  </span>
+  <span class="absValue">
+    (6/27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package net.engineeringdigest.journalApp.service;
+&nbsp;
+&nbsp;import net.engineeringdigest.journalApp.entity.User;
+&nbsp;import net.engineeringdigest.journalApp.repository.UserRepo;
+&nbsp;import org.bson.types.ObjectId;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+&nbsp;import org.springframework.security.crypto.password.PasswordEncoder;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class UserService {</b>
+&nbsp;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserRepo userRepo;
+&nbsp;
+<b class="fc">&nbsp;    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();</b>
+&nbsp;
+&nbsp;    public boolean createUser(User user){
+&nbsp;        try {
+<b class="fc">&nbsp;            user.setPassword(passwordEncoder.encode(user.getPassword()));</b>
+<b class="fc">&nbsp;            user.setRoles(List.of(&quot;USER&quot;));</b>
+<b class="fc">&nbsp;            userRepo.save(user);</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        }
+&nbsp;        catch (Exception e){
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public User createAdminUser(User user){
+<b class="nc">&nbsp;        user.setPassword(passwordEncoder.encode(user.getPassword()));</b>
+<b class="nc">&nbsp;        user.setRoles(List.of(&quot;USER&quot;, &quot;ADMIN&quot;));</b>
+<b class="nc">&nbsp;        userRepo.save(user);</b>
+<b class="nc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void saveUser(User user){
+<b class="nc">&nbsp;        userRepo.save(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public List&lt;User&gt; getAllUser(){
+<b class="nc">&nbsp;        return userRepo.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public User getUserByUserName(String username){
+<b class="nc">&nbsp;        return userRepo.findByUserName(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public User updateUser(String username, User user) {
+<b class="nc">&nbsp;        User oldUser = userRepo.findByUserName(username);</b>
+<b class="nc">&nbsp;        if (oldUser != null) {</b>
+&nbsp;
+<b class="nc">&nbsp;            if (user.getUserName() != null &amp;&amp; !user.getUserName().isEmpty()) {</b>
+<b class="nc">&nbsp;                oldUser.setUserName(user.getUserName());</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            if (user.getPassword() != null &amp;&amp; !user.getPassword().isEmpty()) {</b>
+<b class="nc">&nbsp;                oldUser.setPassword(user.getPassword());</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            if (user.getJournalEntries() != null &amp;&amp; !user.getJournalEntries().isEmpty()) {</b>
+<b class="nc">&nbsp;                if (oldUser.getJournalEntries() == null) {</b>
+<b class="nc">&nbsp;                    oldUser.setJournalEntries(new ArrayList&lt;&gt;());</b>
+&nbsp;                }
+<b class="nc">&nbsp;                oldUser.getJournalEntries().addAll(user.getJournalEntries());</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            return userRepo.save(oldUser);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;//    public User deleteUserByUserName(String username){
+&nbsp;//        return userRepo.deleteByUserName(username);
+&nbsp;//    }
+&nbsp;
+&nbsp;    public void deleteUserByUserName(String username){
+<b class="nc">&nbsp;        userRepo.deleteByUserName(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-06-20 11:34</div>
+</div>
+</body>
+</html>

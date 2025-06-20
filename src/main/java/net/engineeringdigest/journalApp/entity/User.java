@@ -1,6 +1,7 @@
 package net.engineeringdigest.journalApp.entity;
 
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @Document
+@Builder
 public class User {
 
     @Id
